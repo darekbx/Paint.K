@@ -15,7 +15,6 @@ import java.awt.Toolkit
 
 /**
  * TODO:
- * - save image
  * - resize image
  * - crop image
  * - select part

@@ -12,7 +12,8 @@ object PaintDotKTheme {
         val material: androidx.compose.material.Colors = darkColors(
             background = Color.Black,
             surface = Color(0xFF2B2B2B),
-            primary = Color.White
+            primary = Color(0xFF3949AB),
+            onSurface = Color.White
         ),
     )
 }

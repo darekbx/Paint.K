@@ -16,7 +16,7 @@ fun StatusBar(modifier: Modifier = Modifier, imageEditor: ImageEditor) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
-        with (imageEditor.imageSize.value) {
+        with(imageEditor.imageSize.value) {
             Text("$width x $height", fontSize = 12.sp)
         }
         Spacer(Modifier.width(16.dp))

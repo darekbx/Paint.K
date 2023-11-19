@@ -27,7 +27,7 @@ class ImageEditor {
     val uiState: Flow<ImageInstanceState>
         get() = _uiState
 
-    var screenShotcallback: (() -> ByteArray?)? = null
+    var screenshotCallback: (() -> ByteArray?)? = null
 
     var zoom = mutableFloatStateOf(1F)
     var imageSize = mutableStateOf(IntSize.Zero)
@@ -46,7 +46,7 @@ class ImageEditor {
 
     fun saveFile(directory: String?, fileName: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val bytes = screenShotcallback?.invoke()
+            val bytes = screenshotCallback?.invoke()
 
             FileOutputStream(File(directory, fileName)).use {
                 it.write(bytes)

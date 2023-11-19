@@ -4,24 +4,27 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
+import androidx.compose.ui.unit.IntSize
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import commands.Command
 import di.MiniDi
 import imageeditor.ImageEditor
 import imageeditor.ImageEditorView
 import ui.dialogs.ResizeDialog
+import ui.dialogs.SaveFileDialog
 
 @Composable
 fun MainLayout(
     imageEditor: ImageEditor = MiniDi.imageEditor
 ) {
     var showResizeDialog by remember { mutableStateOf(false) }
+    var showSaveFileDialog by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         CommandsRow(modifier = Modifier.fillMaxWidth()) { command ->
-            when(command) {
+            when (command) {
                 Command.RESIZE -> showResizeDialog = true
+                Command.SAVE -> showSaveFileDialog = true
                 else -> {}
             }
         }
@@ -34,10 +37,27 @@ fun MainLayout(
         StatusBar(modifier = Modifier.fillMaxWidth(), imageEditor)
     }
 
+    if (showSaveFileDialog) {
+        SaveFileDialog(
+            onSave = { directory, fileName ->
+                showSaveFileDialog = false
+                imageEditor.saveFile(directory, fileName)
+            },
+            onCancel = { showSaveFileDialog = false }
+        )
+    }
 
     if (showResizeDialog) {
         // TODO add lambda to handle close (showResizeDialog), pass imageEditor
-        ResizeDialog()
+        ResizeDialog(
+            originalSize = imageEditor.imageSize.value,
+            onResize = { newSize ->
+
+                // TODO use newSize
+                showResizeDialog = false
+            },
+            onCancel = { showResizeDialog = false }
+        )
     }
 }
 
@@ -48,28 +68,22 @@ private fun CommandsRow(
     onDialogAction: (Command) -> Unit
 ) {
     var showFilePicker by remember { mutableStateOf(false) }
-    var showDirectoryPicker by remember { mutableStateOf(false) }
 
     CommandBar(modifier = modifier) { command ->
         when (command) {
             Command.OPEN -> showFilePicker = true
-            Command.SAVE -> showDirectoryPicker = true
+            Command.SAVE -> onDialogAction(command)
             Command.RESIZE -> onDialogAction(command)
             Command.CROP -> TODO()
             Command.INFO -> TODO()
             Command.ZOOM_OUT -> imageEditor.zoomOut()
             Command.ZOOM_IN -> imageEditor.zoomIn()
-            else -> { }
+            else -> {}
         }
     }
 
     FilePicker(showFilePicker, fileExtensions = ImageEditor.SUPPORTED_EXTENSIONS) {
         showFilePicker = false
         imageEditor.loadFile(it)
-    }
-
-    DirectoryPicker(showDirectoryPicker) {
-        showDirectoryPicker = false
-        imageEditor.saveFile(it, "paint_dot_k.jpg")
     }
 }

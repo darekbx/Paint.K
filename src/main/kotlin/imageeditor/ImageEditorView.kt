@@ -12,8 +12,8 @@ import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -69,11 +69,10 @@ private fun EditorCanvas(
     )
 
     // Set initial size and zoom
-    imageEditor.setImageSize(initialSize)
     imageEditor.zoom.value = initialScale
 
     val screenshotState = rememberScreenshotState()
-    imageEditor.screenShotcallback = { screenshotState.capture() }
+    imageEditor.screenshotCallback = { screenshotState.capture() }
 
     if (canvasSize.width > 0 && canvasSize.height > 0) {
         ScreenshotBox(screenshotState, canvasSize, EncodedImageFormat.PNG) {
@@ -82,11 +81,18 @@ private fun EditorCanvas(
                 if (image != null) {
                     drawImage(image, Offset((size.width - image.width) / 2F, (size.height - image.height) / 2F))
                     drawLine(Color.Red, Offset(0F, 0F), Offset(size.width, size.height), strokeWidth = 5F)
+
+                    imageEditor.setImageSize(IntSize(image.width, image.height))
                 } else {
                     drawRect(Color.White)
                     drawLine(Color.LightGray, Offset(0F, 0F), Offset(size.width, size.height))
+
+                    imageEditor.setImageSize(size.toIntSize())
                 }
+
             }
         }
     }
 }
+
+fun Size.toIntSize() = IntSize(width.toInt(), height.toInt())
